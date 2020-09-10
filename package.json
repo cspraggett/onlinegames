@@ -1,0 +1,19 @@
+{
+  "name": "onlineGames",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "fastify": "^3.3.0",
+    "immutable": "^4.0.0-rc.12"
+  },
+  "devDependencies": {
+    "jest": "^26.4.2"
+  }
+}
