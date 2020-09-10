@@ -37,11 +37,21 @@ const adjacentSquares = List([
   },
 ]);
 
-const neighbouringSquares = (move) => {
-  return adjacentSquares.map((curr) => {
-    console.log("curr: ", curr, "move: ", curr(move));
-    return List([curr, curr(move)]);
+const neighbouringSquares = (move) =>
+  adjacentSquares
+    .map((curr) => List([curr, curr(move)]))
+    .filter((curr) => curr.get(1) !== null);
+
+const getSquaresWithDisc = (board, disc) => {
+  return board.entrySeq().filter(([k, v]) => {
+    return v === disc;
   });
 };
 
-module.exports = { otherSide, initialBoard, adjacentSquares };
+module.exports = {
+  otherSide,
+  initialBoard,
+  adjacentSquares,
+  neighbouringSquares,
+  getSquaresWithDisc,
+};
