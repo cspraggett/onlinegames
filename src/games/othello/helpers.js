@@ -2,6 +2,14 @@ const { Map, List, toJS } = require("immutable");
 
 const otherSide = Map({ B: "W", W: "B" });
 
+const getValueFromSquare = (square) => {
+  return square.last();
+};
+
+const updateSquare = (square) => {
+  return square.first()(square.last());
+};
+
 const initialBoard = List()
   .setSize(64)
   .map(() => "E")
@@ -37,16 +45,62 @@ const adjacentSquares = List([
   },
 ]);
 
-const neighbouringSquares = (move) =>
-  adjacentSquares
+const neighbouringSquares = (move) => {
+  return adjacentSquares
     .map((curr) => List([curr, curr(move)]))
     .filter((curr) => curr.get(1) !== null);
+};
 
 const getSquaresWithDisc = (board, disc) => {
-  return board.entrySeq().filter(([k, v]) => {
-    return v === disc;
+  return board
+    .entrySeq()
+    .filter(([k, v]) => {
+      return v === disc;
+    })
+    .toList()
+    .map((curr) => {
+      return curr[0];
+    });
+};
+
+const neighbouringOccupiedSquares = (board, stone, squares) => {
+  return squares.filter((curr) => {
+    return board.get(getValueFromSquare(curr)) === otherSide.get(stone);
   });
 };
+
+const validatedMove = (board, directionFn, stone, target) => {
+  const nextSquare = updateSquare(directionFn);
+  switch (board.get(nextSquare)) {
+  case target:
+    return nextSquare;
+  case stone:
+    validatedMove(board, updateSquare(directionFn), stone, target);
+  default:
+    return null;
+  }
+};
+
+const isValidMove = (board, square, disc) => {
+  const squares = neighbouringSquares(square);
+  return neighbouringOccupiedSquares(board, disc, squares).map((curr) =>
+    validatedMove(board, curr, otherSide.get(disc), "E")
+  );
+};
+
+const validMoves = (board, disc) => {
+  return getSquaresWithDisc(board, disc)
+    .reduce((acc, curr) => {
+      const newMove = isValidMove(board, curr, disc);
+      if (newMove) {
+        return acc.push(newMove);
+      }
+      return acc;
+    }, List())
+    .flatten();
+};
+
+console.log("my moves: ", validMoves(initialBoard, "B").toJS());
 
 module.exports = {
   otherSide,
